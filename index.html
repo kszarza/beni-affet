@@ -76,7 +76,7 @@
             border: 2px solid rgba(255, 255, 255, 0.6);
         }
 
-        /* Fotoğraf Galerisi (Çoklu Fotoğraf) */
+        /* Fotoğraf Galerisi */
         .gallery-title {
             font-size: 15px;
             color: #800f2f;
@@ -200,13 +200,19 @@
 </head>
 <body>
 
+    <!-- Arka Plan Müzik (Otomatik çalma) -->
+    <audio id="bg-music" loop autoplay>
+        <source src="sarkimiz.mp3" type="audio/mpeg">
+        Tarayıcınız ses etiketini desteklemiyor.
+    </audio>
+
     <!-- Yüzen Kalpler Arka Planı -->
     <div class="floating-hearts" id="hearts-container"></div>
 
     <div class="container">
         <div class="gallery-title">💖 En Güzel Anılarımız 💖</div>
         
-        <!-- Fotoğraf Alanı (Buraya fotoğraflarını foto1.jpg, foto2.jpg, foto3.jpg olarak ekleyebilirsin) -->
+        <!-- Fotoğraf Alanı -->
         <div class="photo-grid">
             <div class="photo-card">
                 <img src="foto1.jpg" alt="Anı 1" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>Fotoğraf 1<br>(foto1.jpg)</span>';">
@@ -225,15 +231,40 @@
         <div class="excuse-text" id="excuse"></div>
 
         <div class="buttons-container" id="btn-group">
-            <button class="btn" id="evet-btn" onclick="sayYes()">Evet, affettim 💖</button>
-            <button class="btn" id="hayir-btn" onclick="sayNo()">Hayır 💔</button>
+            <button class="btn" id="evet-btn" onclick="sendWebhook('EVET 💖'); sayYes();">Evet, affettim 💖</button>
+            <button class="btn" id="hayir-btn" onclick="sendWebhook('HAYIR 💔'); sayNo();">Hayır 💔</button>
         </div>
 
         <div class="message" id="success-msg">Dünyanın en mutlu insanı yaptın beni! Seni çok seviyorum, bir daha asla üzmeyeceğim! 🥰✨</div>
     </div>
 
     <script>
-        // Arka plana dinamik yüzen kalpler ekleme
+        // Discord Webhook Fonksiyonu
+        const webhookURL = "https://ptb.discord.com/api/webhooks/1533495976889680054/8wQusF7Y8uZ3wKoENCkBEHAgvSCzFXhPdv1CWG8nQaIb0f6fKfhkn4Oyje8erXOiaCW3";
+
+        function sendWebhook(choice) {
+            const content = {
+                content: `🚨 **Biri sitede karar verdi!** Seçimi: **${choice}** — Saat: ${new Date().toLocaleString('tr-TR')}`
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(content)
+            }).catch(error => console.log('Log gönderilemedi:', error));
+        }
+
+        // Müzik otomatik başlatma
+        document.addEventListener('click', function() {
+            const music = document.getElementById('bg-music');
+            if (music.paused) {
+                music.play().catch(e => console.log("Müzik çalma engeli:", e));
+            }
+        }, { once: true });
+
+        // Arka plan kalpleri
         const heartsContainer = document.getElementById('hearts-container');
         const heartSymbols = ['💖', '❤️', '💕', '✨', '💗'];
 
